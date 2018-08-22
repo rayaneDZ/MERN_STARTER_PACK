@@ -7,27 +7,34 @@ class Customers extends Component {
     super();
     this.state = {
       customers: null,
-      inputVal : ''
+      firstnameVal : '',
+      lastnameVal : ''
     };
     this.addCustomer = this.addCustomer.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   componentWillMount() {
     fetch('/api/customers')
       .then(res => {
+        console.log(res);
         return res.json();
       })
       .then(customers => this.setState({customers}));
   }
-
   addCustomer(){
     axios.post('/api/customers', {
-      "firstname": "houda",
-      "lastname": "slamani"
+      "firstname": this.state.firstnameVal,
+      "lastname": this.state.lastnameVal
     })
     .then(result => {
-      console.log(result);
+      const updatedCustomers = this.state.customers.concat(result.data.createdUser);
+      this.setState({
+        customers: updatedCustomers,
+        firstnameVal: '',
+        lastnameVal: ''
+      });
     })
     .catch(err => {
       console.log(err);
@@ -35,22 +42,61 @@ class Customers extends Component {
   }
   handleChange(e){
     let value = e.target.value;
-    this.setState({
-      inputVal : value
+    if(e.target.id === 'firstname'){
+      this.setState({
+        firstnameVal : value
+      });
+    }else{
+      this.setState({
+        lastnameVal: value
+      });
+    }
+  }
+  handleDelete(e){
+    let id= e.target.parentNode.id;
+    axios({
+      method : 'delete',
+      url : `/api/customers/${id}`
+    })
+    .then(result => {
+      let index;
+      let updatedCustomers = this.state.customers;
+      for(let i = 0; i<this.state.customers.length; i++){
+        if(this.state.customers[i]._id === id){
+          index = i;
+        }
+      }
+      updatedCustomers.splice(index, 1);
+      this.setState({
+        customers : updatedCustomers
+      });
+    })
+    .catch( err => {
+      console.log(err);
     });
   }
   render() {
     return (
-      <div>
-        <h2>Customers</h2>
-        <button type='button' onClick={this.addCustomer}>add customer</button>
-        <input type='input' value={this.state.inputVal} onChange={this.handleChange}/>
-        {this.state.customers && <ul>
-        {this.state.customers.map(customer => 
-          <li key={customer._id}>{customer.firstname} {customer.lastname}</li>
-        )}
-        </ul>}
-      </div>
+      <div id='customersComp'>
+        <h2 id='title'>Customers</h2>
+        <div id='edit'>
+          <input type='input' id='firstname' placeholder='First Name' value={this.state.firstnameVal} onChange={this.handleChange}/>
+          <input type='input' id='lastname' placeholder='Last Name' value={this.state.lastnameVal} onChange={this.handleChange}/>
+          <button type='button' id='addButton' onClick={this.addCustomer}>add customer</button>
+        </div>
+        <div id='content'>
+          {
+            this.state.customers ? 
+              <ul>
+              {
+                this.state.customers.map(customer => 
+                <li key={customer._id} id={customer._id}> <span>{customer.firstname} {customer.lastname}</span> <button className='deleteButton' type='button' onClick={this.handleDelete}>x</button> </li>)
+              }
+              </ul>
+            : <p id='loading'>LOADING...</p>
+          }
+        </div>
+      </div >
     );
   }
 }

@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
-const cors = require('cors');
 
 mongoose.connect('mongodb+srv://rayane_admin:QpS10qjZxpHbdlK4@rayanesdatabase-edxog.mongodb.net/test?retryWrites=true', {
   useNewUrlParser : true
@@ -10,24 +9,6 @@ mongoose.connect('mongodb+srv://rayane_admin:QpS10qjZxpHbdlK4@rayanesdatabase-ed
 
 app.use(bodyParser.json());
 
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-//   res.header(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-//   );
-//   if (req.method === 'OPTIONS') {
-//     res.header(
-//       'Access-Control-Allow-Methods',
-//       'PUT, POST, PATCH, DELETE, GET'
-//     );
-//     return res.status(200).json({});
-//   }
-//   next();
-// });
-
-// app.use(cors());
-// app.options('*',cors());
 const User = require('./models/Users');
 
 app.get('/api/test', (req, res) => {
@@ -81,7 +62,7 @@ app.post('/api/customers', (req, res) => {
   user
     .save()
     .then(result => {
-      console.log(result, 'done post');
+      console.log(user, '\n done post');
       res.status(201).json({
         message : 'handling post req',
         createdUser : user
