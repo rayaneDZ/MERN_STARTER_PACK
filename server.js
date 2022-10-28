@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 
-mongoose.connect('mongodb+srv://rayane_admin:QpS10qjZxpHbdlK4@rayanesdatabase-edxog.mongodb.net/test?retryWrites=true', {
+mongoose.connect('mongodb link', {
   useNewUrlParser : true
 }); 
 
